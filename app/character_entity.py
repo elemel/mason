@@ -1,9 +1,11 @@
 from app.entity import Entity
 
 class CharacterEntity(Entity):
-    def __init__(self, controls, physics_component, collision_detector,
-                 collision_body, batch, sprite, size=(1.0, 1.0)):
+    def __init__(self, controls, state_component, physics_component,
+                 collision_detector, collision_body, batch, sprite,
+                 size=(1.0, 1.0)):
         self.controls = controls
+        self.state_component = state_component
         self.physics_component = physics_component
         self.collision_detector = collision_detector
         self.collision_body = collision_body
@@ -15,15 +17,17 @@ class CharacterEntity(Entity):
         self.collision_body.detector = self.collision_detector
         self.sprite.batch = self.batch
         self.draw(0.5)
+        self.physics_component.create()
+        self.state_component.create()
 
     def delete(self):
+        self.state_component.delete()
+        self.physics_component.delete()
         self.sprite.batch = None
         self.collision_body.detector = None
 
     def update(self, dt):
         self.controls.update(dt)
-        move_x, move_y = self.controls.move
-        self.physics_component.acceleration = move_x, -10.0
         self.physics_component.update(dt)
         self.update_collision_body(dt)
 

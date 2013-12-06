@@ -6,6 +6,7 @@ from app.game_collision_listener import GameCollisionListener
 from app.game_view import GameView
 from app.game_window import GameWindow
 from app.scene import Scene
+from app.update import UpdateManager, UpdatePhase
 
 import pyglet
 import random
@@ -13,6 +14,10 @@ import random
 def main():
     pyglet.resource.path.append('../data')
     pyglet.resource.reindex()
+
+    state_update_phase = UpdatePhase()
+    update_phases = [state_update_phase]
+    update_manager = UpdateManager(update_phases)
 
     scene = Scene()
     camera = Camera(scale=5.0)
@@ -23,10 +28,12 @@ def main():
     key_state_handler = pyglet.window.key.KeyStateHandler()
     block_entity_creator = BlockEntityCreator(collision_detector, batch)
     character_entity_creator = CharacterEntityCreator(key_state_handler,
+                                                      state_update_phase,
                                                       collision_detector,
                                                       batch)
     game_view = GameView(game_window, batch, key_state_handler,
-                         collision_detector, collision_listener, camera)
+                         update_manager, collision_detector,
+                         collision_listener, camera)
     game_window.view = game_view
     for i in xrange(-1, 2):
         position = float(i), 0.0

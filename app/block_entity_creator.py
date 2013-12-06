@@ -14,9 +14,9 @@ class BlockEntityCreator(object):
         x, y = position
         width, height = size
         x1 = x - 0.5 * width
-        y1 = x - 0.5 * height
+        y1 = y - 0.5 * height
         x2 = x + 0.5 * width
-        y2 = x + 0.5 * height
+        y2 = y + 0.5 * height
         p1 = x1, y1
         p2 = x2, y2
         collision_shape = CollisionBox(p1, p2)

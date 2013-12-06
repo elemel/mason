@@ -1,6 +1,9 @@
+from app.component import Component
+from app.maths import sign
+
 from math import sqrt
 
-class PhysicsComponent(object):
+class PhysicsComponent(Component):
     def __init__(self, position=(0.0, 0.0), velocity=(0.0, 0.0),
                  max_velocity=1.0, acceleration=(0.0, 0.0), friction=0.0):
         self.position = position
@@ -20,6 +23,7 @@ class PhysicsComponent(object):
         velocity_x += acceleration_x * dt
         velocity_y += acceleration_y * dt
 
+        # Calculate direction
         direction_x = 0.0
         direction_y = 0.0
         velocity_length = sqrt(velocity_x ** 2 + velocity_y ** 2)

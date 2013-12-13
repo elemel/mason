@@ -2,19 +2,19 @@ from app.entity import Entity
 
 class CharacterEntity(Entity):
     def __init__(self, controls, state_component, physics_component,
-                 collision_detector, collision_body, batch, sprite,
+                 collision_world, collision_body, batch, sprite,
                  size=(1.0, 1.0)):
         self.controls = controls
         self.state_component = state_component
         self.physics_component = physics_component
-        self.collision_detector = collision_detector
+        self.collision_world = collision_world
         self.collision_body = collision_body
         self.batch = batch
         self.sprite = sprite
         self.size = size
 
     def create(self):
-        self.collision_body.detector = self.collision_detector
+        self.collision_body.world = self.collision_world
         self.sprite.batch = self.batch
         self.draw(0.5)
         self.physics_component.create()
@@ -24,7 +24,7 @@ class CharacterEntity(Entity):
         self.state_component.delete()
         self.physics_component.delete()
         self.sprite.batch = None
-        self.collision_body.detector = None
+        self.collision_body.world = None
 
     def update(self, dt):
         self.controls.update(dt)

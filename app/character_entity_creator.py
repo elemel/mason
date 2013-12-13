@@ -11,10 +11,10 @@ import pyglet
 
 class CharacterEntityCreator(object):
     def __init__(self, key_state_handler, state_update_phase,
-                 collision_detector, batch):
+                 collision_world, batch):
         self.key_state_handler = key_state_handler
         self.state_update_phase = state_update_phase
-        self.collision_detector = collision_detector
+        self.collision_world = collision_world
         self.batch = batch
         self.image = pyglet.resource.image('images/mario.png')
 
@@ -47,7 +47,7 @@ class CharacterEntityCreator(object):
             controls=controls,
             state_component=state_component,
             physics_component=physics_component,
-            collision_detector=self.collision_detector,
+            collision_world=self.collision_world,
             collision_body=collision_body,
             batch=self.batch,
             sprite=sprite,

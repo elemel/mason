@@ -1,5 +1,5 @@
 from app.camera import Camera
-from app.collision import CollisionDetector, CollisionListener
+from app.collision import CollisionListener, CollisionWorld
 from app.block_entity_creator import BlockEntityCreator
 from app.character_entity_creator import CharacterEntityCreator
 from app.game_collision_listener import GameCollisionListener
@@ -23,16 +23,16 @@ def main():
     camera = Camera(scale=5.0)
     game_window = GameWindow()
     collision_listener = GameCollisionListener()
-    collision_detector = CollisionDetector(listener=collision_listener)
+    collision_world = CollisionWorld(listener=collision_listener)
     batch = pyglet.graphics.Batch()
     key_state_handler = pyglet.window.key.KeyStateHandler()
-    block_entity_creator = BlockEntityCreator(collision_detector, batch)
+    block_entity_creator = BlockEntityCreator(collision_world, batch)
     character_entity_creator = CharacterEntityCreator(key_state_handler,
                                                       state_update_phase,
-                                                      collision_detector,
+                                                      collision_world,
                                                       batch)
     game_view = GameView(game_window, batch, key_state_handler,
-                         update_manager, collision_detector,
+                         update_manager, collision_world,
                          collision_listener, camera)
     game_window.view = game_view
     for i in xrange(-1, 2):

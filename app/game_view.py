@@ -8,13 +8,13 @@ from pyglet.gl import *
 
 class GameView(View):
     def __init__(self, window, batch, key_state_handler, update_manager,
-                 collision_detector, collision_listener, camera,
+                 collision_world, collision_listener, camera,
                  fixed_dt=(1.0 / 60.0), max_dt=1.0):
         self.window = window
         self.batch = batch
         self.key_state_handler = key_state_handler
         self.update_manager = update_manager
-        self.collision_detector = collision_detector
+        self.collision_world = collision_world
         self.collision_listener = collision_listener
         self.camera = camera
         self.fixed_dt = fixed_dt
@@ -53,8 +53,8 @@ class GameView(View):
             self.dt -= self.fixed_dt
 
     def handle_collisions(self):
-        self.collision_detector.update_collisions()
-        for collision in self.collision_listener.collisions:
+        self.collision_world.flush()
+        for collision in self.collision_world.collisions:
             entity_a = collision.body_a.user_data
             entity_b = collision.body_b.user_data
             entity_types = type(entity_a), type(entity_b) 
@@ -62,7 +62,6 @@ class GameView(View):
                 pass # self.handle_block_character_collision(entity_a, entity_b)
             if entity_types == (CharacterEntity, BlockEntity):
                 self.handle_block_character_collision(entity_b, entity_a)
-        self.collision_listener.collisions.clear()
 
     def handle_block_character_collision(self, block_entity, character_entity):
         character_x, character_y = character_entity.physics_component.position

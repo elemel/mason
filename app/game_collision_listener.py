@@ -6,3 +6,6 @@ class GameCollisionListener(CollisionListener):
 
     def on_collision_add(self, collision):
         self.collisions.add(collision)
+
+    def on_collision_update(self, collision):
+        self.collisions.add(collision)

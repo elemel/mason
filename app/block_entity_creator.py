@@ -5,8 +5,8 @@ from app.subpixel_sprite import SubpixelSprite
 import pyglet
 
 class BlockEntityCreator(object):
-    def __init__(self, collision_detector, batch):
-        self.collision_detector = collision_detector
+    def __init__(self, collision_world, batch):
+        self.collision_world = collision_world
         self.batch = batch
         self.image = pyglet.resource.image('images/block.png')
 
@@ -24,7 +24,7 @@ class BlockEntityCreator(object):
         sprite = SubpixelSprite(self.image)
         sprite.scale = 1.0 / float(self.image.width)
         entity = BlockEntity(
-            collision_detector=self.collision_detector,
+            collision_world=self.collision_world,
             collision_body=collision_body,
             batch=self.batch,
             sprite=sprite,

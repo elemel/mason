@@ -2,7 +2,7 @@ import pyglet
 
 class GameWindow(pyglet.window.Window):
     def __init__(self):
-        super(GameWindow, self).__init__(caption='ZOMBIE ATTACK')
+        super(GameWindow, self).__init__(caption='MASON')
         self._view = None
 
     @property

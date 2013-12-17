@@ -1,5 +1,5 @@
 from app.character_entity import CharacterEntity
-from app.character_states import CharacterStandState
+from app.character_states import CharacterStateFactory
 from app.collision import CollisionBody, CollisionBox
 from app.controls import KeyControls
 from app.physics_component import PhysicsComponent
@@ -54,10 +54,11 @@ class CharacterEntityCreator(object):
             size=size,
         )
         collision_body.user_data = entity
-        state_machine.state = CharacterStandState(
-            entity,
-            controls,
-            physics_component,
-            self.state_update_phase,
+        state_factory = CharacterStateFactory(
+            entity=entity,
+            controls=controls,
+            physics_component=physics_component,
+            update_phase=self.state_update_phase,
         )
+        state_machine.state = state_factory.create_stand_state()
         return entity

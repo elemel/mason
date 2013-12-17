@@ -44,4 +44,3 @@ class StateMachine(object):
             if self._created and self._state is not None:
                 self._state._state_machine = self
                 self._state.create()
-            print self._state

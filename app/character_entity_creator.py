@@ -24,12 +24,7 @@ class CharacterEntityCreator(object):
             position=position,
             max_velocity=10.0,
         )
-        state = CharacterStandState(
-            controls,
-            physics_component,
-            self.state_update_phase,
-        )
-        state_machine = StateMachine(state)
+        state_machine = StateMachine()
         state_component = StateComponent(state_machine)
         x, y = position
         width, height = size
@@ -41,6 +36,10 @@ class CharacterEntityCreator(object):
         p2 = x2, y2
         collision_shape = CollisionBox(p1, p2)
         collision_body = CollisionBody(collision_shape)
+        ground_sensor_p1 = x - 0.5, y - 0.6
+        ground_sensor_p2 = x + 0.5, y - 0.4
+        ground_sensor_shape = CollisionBox(ground_sensor_p1, ground_sensor_p2)
+        ground_sensor = CollisionBody(ground_sensor_shape)
         sprite = SubpixelSprite(self.image)
         sprite.scale = 1.0 / float(self.image.width)
         entity = CharacterEntity(
@@ -49,9 +48,16 @@ class CharacterEntityCreator(object):
             physics_component=physics_component,
             collision_world=self.collision_world,
             collision_body=collision_body,
+            ground_sensor=ground_sensor,
             batch=self.batch,
             sprite=sprite,
             size=size,
         )
         collision_body.user_data = entity
+        state_machine.state = CharacterStandState(
+            entity,
+            controls,
+            physics_component,
+            self.state_update_phase,
+        )
         return entity

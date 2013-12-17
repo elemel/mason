@@ -100,6 +100,10 @@ class CollisionBody(object):
         return self._collisions.itervalues()
 
     @property
+    def collision_bodies(self):
+        return self._collisions.iterkeys()
+
+    @property
     def world(self):
         return self._world
 

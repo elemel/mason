@@ -2,10 +2,13 @@ import pyglet
 
 class Controls(object):
     def __init__(self):
-        self.left = False
-        self.right = False
         self.up = False
+        self.left = False
         self.down = False
+        self.right = False
+
+        self.jump = False
+        self.run = False
 
     @property
     def x(self):
@@ -24,7 +27,10 @@ class KeyControls(Controls):
         self.key_state_handler = key_state_handler
 
     def update(self, dt):
-        self.left = self.key_state_handler[pyglet.window.key.LEFT]
-        self.right = self.key_state_handler[pyglet.window.key.RIGHT]
-        self.up = self.key_state_handler[pyglet.window.key.UP]
-        self.down = self.key_state_handler[pyglet.window.key.DOWN]
+        self.up = self.key_state_handler[pyglet.window.key.W]
+        self.left = self.key_state_handler[pyglet.window.key.A]
+        self.down = self.key_state_handler[pyglet.window.key.S]
+        self.right = self.key_state_handler[pyglet.window.key.D]
+
+        self.jump = self.key_state_handler[pyglet.window.key.SPACE]
+        self.run = self.key_state_handler[pyglet.window.key.LSHIFT]

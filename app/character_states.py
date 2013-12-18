@@ -1,3 +1,4 @@
+from app.maths import clamp
 from app.state import State
 from app.update import UpdateHandler
 
@@ -51,6 +52,8 @@ class CharacterFallState(State, UpdateHandler):
         self.physics_component = physics_component
         self.update_phase = update_phase
         self.state_factory = state_factory
+        self.drift_acceleration = 10.0
+        self.drift_velocity = 2.0
 
     def create(self):
         self.physics_component.acceleration = 0.0, -10.0
@@ -63,6 +66,14 @@ class CharacterFallState(State, UpdateHandler):
         if self.entity.is_standing():
             self.state_machine.state = self.state_factory.create_stand_state()
             return
+        if self.controls.x:
+            control_x = float(self.controls.x)
+            velocity_x, velocity_y = self.physics_component.velocity
+            min_velocity = min(velocity_x, -self.drift_velocity)
+            max_velocity = max(velocity_x, self.drift_velocity)
+            velocity_x += dt * control_x * self.drift_acceleration
+            velocity_x = clamp(velocity_x, min_velocity, max_velocity)
+            self.physics_component.velocity = velocity_x, velocity_y
 
 class CharacterJumpState(State, UpdateHandler):
     def __init__(self, entity, physics_component, update_phase, state_factory):
@@ -104,7 +115,7 @@ class CharacterStandState(State, UpdateHandler):
         if not self.entity.is_standing():
             self.state_machine.state = self.state_factory.create_fall_state()
             return
-        if self.controls.up:
+        if self.controls.jump:
             self.state_machine.state = self.state_factory.create_jump_state()
             return
         if self.controls.x:
@@ -129,6 +140,9 @@ class CharacterWalkState(State, UpdateHandler):
         self.physics_component.acceleration = 0.0, -10.0
 
     def update(self, dt):
+        if self.controls.jump:
+            self.state_machine.state = self.state_factory.create_jump_state()
+            return
         if not self.controls.x:
             self.state_machine.state = self.state_factory.create_stand_state()
             return

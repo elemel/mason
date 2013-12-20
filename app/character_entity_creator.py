@@ -1,7 +1,7 @@
 from app.character_entity import CharacterEntity
 from app.character_states import CharacterStateFactory
 from app.collision import CollisionBody, CollisionBox
-from app.controls import KeyControls
+from app.controls import KeyControls, WiimoteControls
 from app.physics_component import PhysicsComponent
 from app.state import StateMachine
 from app.state_component import StateComponent
@@ -10,16 +10,24 @@ from app.subpixel_sprite import SubpixelSprite
 import pyglet
 
 class CharacterEntityCreator(object):
-    def __init__(self, key_state_handler, state_update_phase,
-                 collision_world, batch):
+    def __init__(self, key_state_handler, joysticks, state_update_phase,
+                 collision_world, batch, block_entity_creator, entity_manager,
+                 block_grid):
         self.key_state_handler = key_state_handler
+        self.joysticks = list(joysticks)
         self.state_update_phase = state_update_phase
         self.collision_world = collision_world
         self.batch = batch
         self.image = pyglet.resource.image('images/mario.png')
+        self.block_entity_creator = block_entity_creator
+        self.entity_manager = entity_manager
+        self.block_grid = block_grid
 
     def create(self, position=(0.0, 0.0), size=(1.0, 1.0)):
-        controls = KeyControls(self.key_state_handler)
+        if self.joysticks[0] is None:
+            controls = KeyControls(self.key_state_handler)
+        else:
+            controls = WiimoteControls(self.joysticks[0])
         physics_component = PhysicsComponent(
             position=position,
             max_velocity=10.0,
@@ -59,6 +67,9 @@ class CharacterEntityCreator(object):
             controls=controls,
             physics_component=physics_component,
             update_phase=self.state_update_phase,
+            block_entity_creator=self.block_entity_creator,
+            entity_manager=self.entity_manager,
+            block_grid=self.block_grid,
         )
         state_machine.state = state_factory.create_stand_state()
         return entity

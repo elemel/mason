@@ -7,12 +7,13 @@ import pyglet
 from pyglet.gl import *
 
 class GameView(View):
-    def __init__(self, window, batch, key_state_handler, update_manager,
-                 collision_world, collision_listener, camera,
+    def __init__(self, window, batch, key_state_handler, entity_manager,
+                 update_manager, collision_world, collision_listener, camera,
                  fixed_dt=(1.0 / 60.0), max_dt=1.0):
         self.window = window
         self.batch = batch
         self.key_state_handler = key_state_handler
+        self.entity_manager = entity_manager
         self.update_manager = update_manager
         self.collision_world = collision_world
         self.collision_listener = collision_listener
@@ -20,7 +21,6 @@ class GameView(View):
         self.fixed_dt = fixed_dt
         self.max_dt = max_dt
         self.dt = 0.0
-        self.entities = []
 
     def create(self):
         pyglet.clock.schedule(self.update)
@@ -29,12 +29,10 @@ class GameView(View):
         pyglet.clock.unschedule(self.update)
 
     def add_entity(self, entity):
-        self.entities.append(entity)
-        entity.create()
+        self.entity_manager.add_entity(entity)
 
     def remove_entity(self, entity):
-        entity.delete()
-        self.entities.remove(entity)
+        self.entity_manager.remove_entity(entity)
 
     def on_key_press(self, key, modifiers):
         self.key_state_handler.on_key_press(key, modifiers)
@@ -47,7 +45,7 @@ class GameView(View):
         self.dt += dt
         while self.fixed_dt < self.dt:
             self.update_manager.update(self.fixed_dt)
-            for entity in self.entities:
+            for entity in self.entity_manager.entities:
                 entity.update(self.fixed_dt)
             self.handle_collisions()
             self.dt -= self.fixed_dt
@@ -92,7 +90,7 @@ class GameView(View):
         glOrtho(camera_x1, camera_x2, camera_y1, camera_y2, -1.0, 1.0)
         glMatrixMode(GL_MODELVIEW)
 
-        for entity in self.entities:
+        for entity in self.entity_manager.entities:
             entity.draw(0.5)
         self.batch.draw()
 

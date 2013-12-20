@@ -34,3 +34,19 @@ class KeyControls(Controls):
 
         self.jump = self.key_state_handler[pyglet.window.key.SPACE]
         self.run = self.key_state_handler[pyglet.window.key.LSHIFT]
+
+class WiimoteControls(Controls):
+    def __init__(self, joystick):
+        super(WiimoteControls, self).__init__()
+        self.joystick = joystick
+
+    def update(self, dt):
+        buttons = self.joystick.buttons
+
+        self.up = buttons[1]
+        self.left = buttons[2]
+        self.down = buttons[0]
+        self.right = buttons[3]
+
+        self.jump = buttons[10]
+        self.run = buttons[9]

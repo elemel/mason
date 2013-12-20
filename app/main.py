@@ -1,7 +1,9 @@
 from app.camera import Camera
 from app.collision import CollisionListener, CollisionWorld
 from app.block_entity_creator import BlockEntityCreator
+from app.block_grid import BlockGrid
 from app.character_entity_creator import CharacterEntityCreator
+from app.entity_manager import EntityManager
 from app.game_collision_listener import GameCollisionListener
 from app.game_view import GameView
 from app.game_window import GameWindow
@@ -11,9 +13,19 @@ from app.update import UpdateManager, UpdatePhase
 import pyglet
 import random
 
+def open_joysticks():
+    joysticks = pyglet.input.get_joysticks()[:4]
+    for joystick in joysticks:
+        joystick.open()
+    joysticks += [None] * (4 - len(joysticks))
+    return joysticks
+
 def main():
     pyglet.resource.path.append('../data')
     pyglet.resource.reindex()
+
+    entity_manager = EntityManager()
+    block_grid = BlockGrid()
 
     state_update_phase = UpdatePhase()
     update_phases = [state_update_phase]
@@ -26,13 +38,18 @@ def main():
     collision_world = CollisionWorld(listener=collision_listener)
     batch = pyglet.graphics.Batch()
     key_state_handler = pyglet.window.key.KeyStateHandler()
+    joysticks = open_joysticks()
     block_entity_creator = BlockEntityCreator(collision_world, batch)
     character_entity_creator = CharacterEntityCreator(key_state_handler,
+                                                      joysticks,
                                                       state_update_phase,
                                                       collision_world,
-                                                      batch)
+                                                      batch,
+                                                      block_entity_creator,
+                                                      entity_manager,
+                                                      block_grid)
     game_view = GameView(game_window, batch, key_state_handler,
-                         update_manager, collision_world,
+                         entity_manager, update_manager, collision_world,
                          collision_listener, camera)
     game_window.view = game_view
     for i in xrange(-1, 2):

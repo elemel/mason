@@ -254,5 +254,10 @@ class CharacterWalkState(State, UpdateHandler):
             self.state_machine.state = self.state_factory.create_stand_state()
             return
 
+        if self.controls.x and self.controls.x != self.entity.facing:
+            self.entity.facing = self.controls.x
+            flip_x = (self.entity.facing == -1)
+            self.entity.sprite.image = self.entity.image.get_transform(flip_x=flip_x)
+
         acceleration_x = 10.0 * float(self.controls.x)
         self.physics_component.acceleration = acceleration_x, -10.0

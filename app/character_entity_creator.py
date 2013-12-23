@@ -19,11 +19,13 @@ class CharacterEntityCreator(object):
         self.collision_world = collision_world
         self.batch = batch
         self.image = pyglet.resource.image('images/mario.png')
+        self.image.anchor_x = self.image.width // 2
+        self.image.anchor_y = self.image.height // 2
         self.block_entity_creator = block_entity_creator
         self.entity_manager = entity_manager
         self.block_grid = block_grid
 
-    def create(self, position=(0.0, 0.0), size=(1.0, 1.0)):
+    def create(self, position=(0.0, 0.0), size=(1.0, 1.0), facing=1):
         if self.joysticks[0] is None:
             controls = KeyControls(self.key_state_handler)
         else:
@@ -58,8 +60,10 @@ class CharacterEntityCreator(object):
             collision_body=collision_body,
             ground_sensor=ground_sensor,
             batch=self.batch,
+            image=self.image,
             sprite=sprite,
             size=size,
+            facing=1,
         )
         collision_body.user_data = entity
         state_factory = CharacterStateFactory(

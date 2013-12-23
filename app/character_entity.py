@@ -3,8 +3,8 @@ from app.entity import Entity
 
 class CharacterEntity(Entity):
     def __init__(self, controls, state_component, physics_component,
-                 collision_world, collision_body, ground_sensor, batch, sprite,
-                 size=(1.0, 1.0)):
+                 collision_world, collision_body, ground_sensor, batch, image,
+                 sprite, size=(1.0, 1.0), facing=1):
         self.controls = controls
         self.state_component = state_component
         self.physics_component = physics_component
@@ -12,8 +12,10 @@ class CharacterEntity(Entity):
         self.collision_body = collision_body
         self.ground_sensor = ground_sensor
         self.batch = batch
+        self.image = image
         self.sprite = sprite
         self.size = size
+        self.facing = facing 
 
     def create(self):
         self.collision_body.world = self.collision_world
@@ -56,5 +58,4 @@ class CharacterEntity(Entity):
 
     def draw(self, t):
         x, y = self.physics_component.position
-        width, height = self.size
-        self.sprite.position = x - 0.5 * width, y - 0.5 * height
+        self.sprite.position = self.physics_component.position

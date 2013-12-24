@@ -41,15 +41,17 @@ class CharacterEntity(Entity):
     def update_collision_body(self, dt):
         box = self.collision_body.shape
         x, y = self.physics_component.position
-        box.p1 = x - 0.5, y - 0.5
-        box.p2 = x + 0.5, y + 0.5
+        width, height = self.size
+        box.p1 = x - 0.5 * width, y - 0.5 * height
+        box.p2 = x + 0.5 * width, y + 0.5 * height
         self.collision_body.touch()
 
     def update_ground_sensor(self, dt):
         box = self.ground_sensor.shape
         x, y = self.physics_component.position
-        box.p1 = x - 0.5, y - 0.6
-        box.p2 = x + 0.5, y - 0.4
+        width, height = self.size
+        box.p1 = x - 0.5 * width, y - 0.5 * height - 0.05
+        box.p2 = x + 0.5 * width, y - 0.5 * height + 0.05
         self.ground_sensor.touch()
 
     def is_standing(self):

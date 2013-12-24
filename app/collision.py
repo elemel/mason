@@ -231,9 +231,9 @@ class CollisionWorld(object):
         self._dirty_bodies.add(body)
 
     def _remove_body(self, body):
-        for collision in list(body._collisions):
+        for collision in list(body._collisions.itervalues()):
             self._remove_collision(collision)
-        for grid_position in generate_grid_positions(grid_box):
+        for grid_position in generate_grid_positions(body._grid_box):
             self._grid[grid_position].remove(body)
         body._grid_box = (0, 0), (0, 0)
         self._bodies.remove(body)

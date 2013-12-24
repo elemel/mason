@@ -64,7 +64,7 @@ class GameView(View):
     def handle_block_character_collision(self, block_entity, character_entity):
         character_x, character_y = character_entity.physics_component.position
         block_x, block_y = block_entity.position
-        character_y = block_y + 1.0
+        character_y = block_y + 0.9
         character_entity.physics_component.position = character_x, character_y
 
         velocity_x, velocity_y = character_entity.physics_component.velocity

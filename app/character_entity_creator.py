@@ -25,7 +25,7 @@ class CharacterEntityCreator(object):
         self.entity_manager = entity_manager
         self.block_grid = block_grid
 
-    def create(self, position=(0.0, 0.0), size=(1.0, 1.0), facing=1):
+    def create(self, position=(0.0, 0.0), size=(0.8, 0.8), facing=1):
         if self.joysticks[0] is None:
             controls = KeyControls(self.key_state_handler)
         else:
@@ -46,12 +46,12 @@ class CharacterEntityCreator(object):
         p2 = x2, y2
         collision_shape = CollisionBox(p1, p2)
         collision_body = CollisionBody(collision_shape)
-        ground_sensor_p1 = x - 0.5, y - 0.6
-        ground_sensor_p2 = x + 0.5, y - 0.4
+        ground_sensor_p1 = x - 0.5 * width, y - 0.5 * height - 0.05
+        ground_sensor_p2 = x + 0.5 * width, y - 0.5 * height + 0.05
         ground_sensor_shape = CollisionBox(ground_sensor_p1, ground_sensor_p2)
         ground_sensor = CollisionBody(ground_sensor_shape)
         sprite = SubpixelSprite(self.image)
-        sprite.scale = 1.0 / float(self.image.width)
+        sprite.scale = 0.8 / float(self.image.width)
         entity = CharacterEntity(
             controls=controls,
             state_component=state_component,

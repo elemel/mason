@@ -17,6 +17,7 @@ class CharacterStateFactory(object):
 
     def create_build_down_state(self):
         return CharacterBuildState(
+            entity=self.entity,
             grid_direction_y=-1,
             physics_component=self.physics_component,
             update_phase=self.update_phase,
@@ -28,6 +29,7 @@ class CharacterStateFactory(object):
 
     def create_build_up_state(self):
         return CharacterBuildState(
+            entity=self.entity,
             grid_direction_y=1,
             physics_component=self.physics_component,
             update_phase=self.update_phase,
@@ -81,9 +83,10 @@ class CharacterStateFactory(object):
         )
 
 class CharacterBuildState(State, UpdateHandler):
-    def __init__(self, grid_direction_y, physics_component, update_phase,
-                 state_factory, block_entity_creator, entity_manager,
-                 block_grid):
+    def __init__(self, entity, grid_direction_y, physics_component,
+                 update_phase, state_factory, block_entity_creator,
+                 entity_manager, block_grid):
+        self.entity = entity
         self.grid_direction_y = grid_direction_y
         self.physics_component = physics_component
         self.update_phase = update_phase
@@ -99,25 +102,37 @@ class CharacterBuildState(State, UpdateHandler):
         self.update_phase.remove_handler(self)
 
     def update(self, dt):
-        x, y = self.physics_component.position
-        grid_x, grid_y = int(floor(x)) + 1, int(floor(y)) - 1
-        if self.block_grid[grid_x, grid_y] is not None:
-            grid_x += 1
-        if self.block_grid[grid_x, grid_y] is not None:
-            grid_y += 1
-        if self.block_grid[grid_x, grid_y] is None:
-            block_position = float(grid_x), float(grid_y)
-            block_entity = self.block_entity_creator.create(
-                position=block_position)
-            self.entity_manager.add_entity(block_entity)
-            self.block_grid[grid_x, grid_y] = block_entity
+        for build, grid_x, grid_y in self._get_build_grid_positions():
+            if build and self.block_grid[grid_x, grid_y] is None:
+                block_position = float(grid_x), float(grid_y)
+                block_entity = self.block_entity_creator.create(
+                    position=block_position)
+                self.entity_manager.add_entity(block_entity)
+                self.block_grid[grid_x, grid_y] = block_entity
+                break
+            if not build and self.block_grid[grid_x, grid_y] is not None:
+                block_entity = self.block_grid[grid_x, grid_y]
+                self.block_grid[grid_x, grid_y] = None
+                self.entity_manager.remove_entity(block_entity)
+                break
         self.state_machine.state = self.state_factory.create_crouch_state()
 
-    def _get_build_grid_position(self):
+    def _get_build_grid_positions(self):
+        facing = self.entity.facing
+        position = self.physics_component.position
+        grid_x, grid_y = self.block_grid.get_grid_position(position)
         if self.grid_direction_y == -1:
-            return self._get_build_down_grid_position()
+            yield True, grid_x, grid_y - 1
+            yield False, grid_x + facing, grid_y
+            yield False, grid_x + facing, grid_y - 1
+            yield True, grid_x, grid_y - 2
+            yield True, grid_x + facing, grid_y - 2
         else:
-            return self._get_build_up_grid_position()
+            yield True, grid_x, grid_y - 1
+            yield True, grid_x + facing, grid_y - 1
+            yield True, grid_x + facing, grid_y
+            yield False, grid_x, grid_y + 1
+            yield False, grid_x + facing, grid_y + 1
 
 class CharacterCrouchState(State, UpdateHandler):
     def __init__(self, entity, controls, update_phase, state_factory):
